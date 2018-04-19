@@ -19,6 +19,11 @@ var navH:CGFloat = 64
 
 let cellID = "MDBannerCollectionViewCell"
 
+
+@objc protocol MDShockBannerViewDelegate:NSObjectProtocol {
+    @objc func clickBanner(index:Int)
+}
+
 class MDShockBannerView: UIView {
 
     lazy var topImage:UIImageView = {
@@ -86,6 +91,8 @@ class MDShockBannerView: UIView {
     
     var autoScroll:Bool = true
     
+    weak var delegate:MDShockBannerViewDelegate?
+    
     private var timers:Timer?
     
     private var lastContentOffset:CGFloat = 0
@@ -149,26 +156,25 @@ class MDShockBannerView: UIView {
     }
     
     func setPageControlImage(){
-        // 初始化一个属性列表数组
-//        var ivarName_pageControl: [String] = []
-//        var count: uint = 0
-//        // 获取属性列表
-//        let list = class_copyIvarList(UIPageControl.classForCoder(), &count)
-//
-//        for index in 0 ... count-1 {
-//            // 获取属性名称，ivar_getTypeEncoding 可获取属性类型
-//            let ivarName = ivar_getName( list![ Int(index) ] )
-//            let name = String.init(cString: ivarName!)
-//            print(name)
-//            ivarName_pageControl.append(name)
-//        }
-//        // 判断是否包含这两个属性
-//        if ivarName_pageControl.contains("_pageImage") && ivarName_pageControl.contains("_currentPageImage")
-//        {
-//            pageControl.setValue(UIImage.init(named: "banner_unselect"), forKey: "_pageImage")
-//            pageControl.setValue(UIImage.init(named: "banner_select"), forKey: "_currentPageImage")
-//            pageControl.layoutIfNeeded()
-//        }
+//         初始化一个属性列表数组
+        var ivarName_pageControl: [String] = []
+        var count: uint = 0
+        // 获取属性列表
+        let list = class_copyIvarList(UIPageControl.classForCoder(), &count)
+
+        for index in 0 ... count-1 {
+            // 获取属性名称，ivar_getTypeEncoding 可获取属性类型
+            let ivarName = ivar_getName( list![ Int(index) ] )
+            let name = String.init(cString: ivarName!)
+            print(name)
+            ivarName_pageControl.append(name)
+        }
+        // 判断是否包含这两个属性
+        if ivarName_pageControl.contains("_pageImage") && ivarName_pageControl.contains("_currentPageImage")
+        {
+            pageControl.setValue(#imageLiteral(resourceName: "home_banner_unselect"), forKey: "_pageImage")
+            pageControl.setValue(#imageLiteral(resourceName: "home_banner_select"), forKey: "_currentPageImage")
+        }
     }
     
     func startTimer(){
@@ -311,13 +317,10 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       
+        if delegate != nil && (self.delegate?.responds(to: #selector(self.delegate?.clickBanner(index:))))!{
+            delegate?.clickBanner(index: self.pageControlIndexWithCurrentCellIndex(index: indexPath.item))
+        }
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-
-    }
-    
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.draggingIndex = self.currentIndex()

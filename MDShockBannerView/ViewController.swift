@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController,UIScrollViewDelegate {
+class ViewController: UIViewController,UIScrollViewDelegate,MDShockBannerViewDelegate {
     
     var topImage:UIImageView?
     var bottomImage:UIImageView?
@@ -40,13 +40,9 @@ class ViewController: UIViewController,UIScrollViewDelegate {
 ////        vMask?.backgroundColor = .white
 //        topImage?.mask = vMask
         
-        
-        
-        
-        
-        
        
-        let banner = MDShockBannerView.init(frame: CGRect(x: 0, y: 100, width: mainW, height: 200))
+        let banner = MDShockBannerView.init(frame: CGRect(x: 0, y: 100, width: mainW, height: 300))
+        banner.delegate = self
         let model1 = MDBannerModel()
         model1.img = "https://ss2.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/super/whfpf%3D425%2C260%2C50/sign=a4b3d7085dee3d6d2293d48b252b5910/0e2442a7d933c89524cd5cd4d51373f0830200ea.jpg"
         model1.bgImg = "https://ss2.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/super/whfpf%3D425%2C260%2C50/sign=a4b3d7085dee3d6d2293d48b252b5910/0e2442a7d933c89524cd5cd4d51373f0830200ea.jpg"
@@ -63,6 +59,11 @@ class ViewController: UIViewController,UIScrollViewDelegate {
         
         self.view.addSubview(banner)
         // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    
+    func clickBanner(index: Int) {
+        print(index)
     }
     
 
