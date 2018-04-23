@@ -15,7 +15,15 @@ import SDWebImage
 let mainW = UIScreen.main.bounds.width
 let mainH = UIScreen.main.bounds.height
 
-var navH:CGFloat = 64
+var navH:CGFloat{
+    get{
+        if mainHeight == 812{
+            return 88
+        }else{
+            return 64
+        }
+    }
+}
 
 let cellID = "MDBannerCollectionViewCell"
 

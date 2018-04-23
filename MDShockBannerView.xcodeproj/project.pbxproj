@@ -108,6 +108,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E7CB5AD3208DAC2B00064E22 /* MDShockBanner */ = {
+			isa = PBXGroup;
+			children = (
+				E7CDCB4D2086DC9B00146353 /* MDBannerCollectionViewCell.swift */,
+				E7CDCB4A2086DC9B00146353 /* MDBannerCollectionViewCell.xib */,
+				E7CDCB4E2086DC9C00146353 /* MDBannerModel.swift */,
+				E7CDCB492086DC9B00146353 /* MDMaskView.swift */,
+				E7CDCB4F2086DC9C00146353 /* MDShockBannerView.swift */,
+				E7CDCB4C2086DC9B00146353 /* UIView+MDExtension.swift */,
+			);
+			path = MDShockBanner;
+			sourceTree = "<group>";
+		};
 		E7CDCB0D2086DC6800146353 = {
 			isa = PBXGroup;
 			children = (
@@ -133,13 +146,8 @@
 		E7CDCB182086DC6800146353 /* MDShockBannerView */ = {
 			isa = PBXGroup;
 			children = (
+				E7CB5AD3208DAC2B00064E22 /* MDShockBanner */,
 				E7CDCB192086DC6800146353 /* AppDelegate.swift */,
-				E7CDCB4D2086DC9B00146353 /* MDBannerCollectionViewCell.swift */,
-				E7CDCB4A2086DC9B00146353 /* MDBannerCollectionViewCell.xib */,
-				E7CDCB4E2086DC9C00146353 /* MDBannerModel.swift */,
-				E7CDCB492086DC9B00146353 /* MDMaskView.swift */,
-				E7CDCB4F2086DC9C00146353 /* MDShockBannerView.swift */,
-				E7CDCB4C2086DC9B00146353 /* UIView+MDExtension.swift */,
 				E7CDCB4B2086DC9B00146353 /* ViewController.swift */,
 				E7CDCB202086DC6800146353 /* Assets.xcassets */,
 				E7CDCB472086DC8800146353 /* Main.storyboard */,
