@@ -25,21 +25,33 @@ let cellID = "MDBannerCollectionViewCell"
 }
 
 class MDShockBannerView: UIView {
-
-    lazy var topImage:UIImageView = {
+    
+    var infiniteLoop:Bool = true  //循环滚动
+    
+    var autoScroll:Bool = true  //自动滚动
+    
+    var scrollInterval:Double = 3
+    
+    var selectImage:UIImage?
+    
+    var unselectImage:UIImage?
+    
+    weak var delegate:MDShockBannerViewDelegate?
+    
+    private lazy var topImage:UIImageView = {
         let topImage = UIImageView.init(frame: CGRect(x: 0, y: 0, width: self.width, height: self.height - 30))
         topImage.contentMode = .scaleAspectFill
         return topImage
     }()
     
-    lazy var bottomImage:UIImageView = {
+    private lazy var bottomImage:UIImageView = {
         let bottomImage = UIImageView.init(frame: CGRect(x: 0, y: 0, width: self.width, height: self.height - 30))
         bottomImage.contentMode = .scaleAspectFill
         return bottomImage
     }()
     
     
-    lazy var flowLayout:UICollectionViewFlowLayout = {
+    private lazy var flowLayout:UICollectionViewFlowLayout = {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = CGSize(width: self.width, height: self.height - navH - 10)
         flowLayout.minimumLineSpacing = 0
@@ -47,7 +59,7 @@ class MDShockBannerView: UIView {
         return flowLayout
     }()
     
-    lazy var banner:UICollectionView = {
+    private lazy var banner:UICollectionView = {
         let banner = UICollectionView.init(frame: CGRect(x:0, y: navH + 10, width: self.width, height: self.height - navH - 10), collectionViewLayout: flowLayout)
         banner.backgroundColor = .clear
         banner.isPagingEnabled = true
@@ -59,7 +71,7 @@ class MDShockBannerView: UIView {
         return banner
     }()
     
-    lazy var pageControl:UIPageControl = {
+    private lazy var pageControl:UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.center = CGPoint(x: self.center.x, y: self.y + self.height - 20)
         pageControl.sizeToFit()
@@ -67,33 +79,24 @@ class MDShockBannerView: UIView {
         return pageControl
     }()
     
-    lazy var leftView:MDMaskView = {
+    private lazy var leftView:MDMaskView = {
         let leftView = MDMaskView(frame:CGRect(x: -10, y: 0, width: self.width + 10, height: self.height - 30))
         return leftView
     }()
     
-    lazy var rightView:MDMaskView = {
+    private lazy var rightView:MDMaskView = {
         let rightView = MDMaskView(frame:CGRect(x: 0, y: 0, width: self.width + 10, height: self.height - 30))
         return rightView
     }()
     
-    lazy var bannerMaskView:UIView = {
+    private lazy var bannerMaskView:UIView = {
         let bannerMaskView = UIView(frame:CGRect(x: 0, y: 0, width: self.width, height: self.height))
         return bannerMaskView
     }()
     
-    
-    
-
-    var banners:[MDBannerModel]!
-    
-    var infiniteLoop:Bool = true
-    
-    var autoScroll:Bool = true
-    
-    weak var delegate:MDShockBannerViewDelegate?
-    
     private var timers:Timer?
+    
+    private var banners:[MDBannerModel]!
     
     private var lastContentOffset:CGFloat = 0
 
@@ -102,8 +105,6 @@ class MDShockBannerView: UIView {
     private var draggingIndex:Int = 0 // 拖动时的索引
     
     private var autoScrollIndex:Int = 0 // 自动滚动时的索引
-    
-
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -130,7 +131,7 @@ class MDShockBannerView: UIView {
     
     func setBanner(banners:[MDBannerModel]){
         if banners.count > 1{
-            self.totalItemCount = self.infiniteLoop ? banners.count * 100 : banners.count
+            self.totalItemCount = self.infiniteLoop ? banners.count * 200 : banners.count
             self.banners = banners
             self.banner.reloadData()
             self.banner.scrollToItem(at: IndexPath.init(row: totalItemCount/2, section: 0), at: [], animated: false)
@@ -144,17 +145,20 @@ class MDShockBannerView: UIView {
             if index + 1 > banners.count - 1{
                 self.bottomImage.sd_setImage(with: URL.init(string: banners[0].bgImg!), completed: nil)
             }else{
-                self.bottomImage.sd_setImage(with: URL.init(string: banners[index + index + 1].bgImg!), completed: nil)
+                self.bottomImage.sd_setImage(with: URL.init(string: banners[index + 1].bgImg!), completed: nil)
             }
             
             self.topImage.sd_setImage(with: URL.init(string: banners[index].bgImg!), completed: nil)
             
-            
-            self.startTimer()
+            if autoScroll{
+                self.startTimer()
+            }
         }
         
     }
     
+    
+    // 设置PageControll
     func setPageControlImage(){
 //         初始化一个属性列表数组
         var ivarName_pageControl: [String] = []
@@ -172,15 +176,15 @@ class MDShockBannerView: UIView {
         // 判断是否包含这两个属性
         if ivarName_pageControl.contains("_pageImage") && ivarName_pageControl.contains("_currentPageImage")
         {
-            pageControl.setValue(#imageLiteral(resourceName: "home_banner_unselect"), forKey: "_pageImage")
-            pageControl.setValue(#imageLiteral(resourceName: "home_banner_select"), forKey: "_currentPageImage")
+            pageControl.setValue(selectImage, forKey: "_pageImage")
+            pageControl.setValue(unselectImage, forKey: "_currentPageImage")
         }
     }
     
     func startTimer(){
         self.invalidateTimer()
         self.autoScrollIndex  = self.currentIndex()
-        timers = Timer.init(timeInterval: 3, target: self, selector: #selector(automaticScroll), userInfo: nil, repeats: true)
+        timers = Timer.init(timeInterval: scrollInterval, target: self, selector: #selector(automaticScroll), userInfo: nil, repeats: true)
         RunLoop.main.add(timers!, forMode: .commonModes)
     }
     
@@ -195,7 +199,13 @@ class MDShockBannerView: UIView {
         if totalItemCount == 0{return}
         let currentIndex = self.currentIndex()
         let targetIndex = currentIndex + 1
-        self.scrollToIndex(targetIndex: targetIndex)
+        
+        let cell = banner.cellForItem(at: IndexPath.init(row: currentIndex, section: 0))
+        UIView.animate(withDuration: 0.2, animations: {
+            cell?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+        }) { (finish) in
+            self.scrollToIndex(targetIndex: targetIndex)
+        }
     }
     
     
@@ -227,23 +237,22 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
         return cell
     }
     
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let curretContentOffset = scrollView.contentOffset.x
         self.pageControl.currentPage = self.pageControlIndexWithCurrentCellIndex(index: self.currentIndex())
         if scrollView.isDragging || scrollView.isDecelerating{
             let itemIndex = self.pageControlIndexWithCurrentCellIndex(index: draggingIndex)
-        
+            
             if lastContentOffset > curretContentOffset{
-                
+
                 let cell1 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex, section: 0))
-                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex - 1, section: 0))
+                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex - 1 < 0 ? totalItemCount: self.draggingIndex - 1, section: 0))
                 
                 UIView.animate(withDuration: 0.1) {
                     cell1?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
                     cell2?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
                 }
-                
-                
                 let topIndex = itemIndex - 1 < 0 ? self.banners.count - 1 : itemIndex - 1
                 let bottomIndex = itemIndex
                 self.topImage.sd_setImage(with: URL.init(string: banners[topIndex].bgImg!), completed: nil)
@@ -256,7 +265,7 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
             }else{
                 
                 let cell1 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex, section: 0))
-                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex + 1, section: 0))
+                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.draggingIndex + 1 >= totalItemCount ? totalItemCount/2 : draggingIndex + 1, section: 0))
                 
                 UIView.animate(withDuration: 0.1) {
                     cell1?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
@@ -276,13 +285,10 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
             let itemIndex = self.pageControlIndexWithCurrentCellIndex(index: autoScrollIndex)
             if lastContentOffset > curretContentOffset{
                 
-                let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex, section: 0))
-                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex - 1, section: 0))
-                
-                UIView.animate(withDuration: 0.1) {
-                    cell1?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-                    cell2?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-                }
+                let cell = banner.cellForItem(at: IndexPath.init(row: autoScrollIndex - 1 < 0 ? totalItemCount : autoScrollIndex - 1, section: 0))
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+                })
                 
                 let topIndex = itemIndex - 1 < 0 ? self.banners.count - 1 : itemIndex - 1
                 let bottomIndex = itemIndex
@@ -295,13 +301,10 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
                 
             }else{
                 
-                let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex, section: 0))
-                let cell2 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex + 1, section: 0))
-                
-                UIView.animate(withDuration: 0.1) {
-                    cell1?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-                    cell2?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-                }
+                let cell = banner.cellForItem(at: IndexPath.init(row: autoScrollIndex + 1 >= totalItemCount ? totalItemCount/2 : autoScrollIndex + 1, section: 0))
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell?.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+                })
                 
                 let topIndex = (itemIndex + 1) > self.banners.count - 1 ? 0 : itemIndex + 1
                 let bottomIndex = itemIndex
@@ -312,7 +315,7 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
                     self.rightView.setRadius(radius: (curretContentOffset - mainW * CGFloat(self.autoScrollIndex)) * 2, direction: .left)
                 })
             }
-             lastContentOffset = scrollView.contentOffset.x
+            lastContentOffset = scrollView.contentOffset.x
         }
     }
     
@@ -321,7 +324,7 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
             delegate?.clickBanner(index: self.pageControlIndexWithCurrentCellIndex(index: indexPath.item))
         }
     }
-
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.draggingIndex = self.currentIndex()
         if self.autoScroll{
@@ -339,12 +342,12 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
         //拖动结束后
         lastContentOffset = scrollView.contentOffset.x
         self.autoScrollIndex = self.currentIndex()
-    
-        let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex - 1 , section: 0))
-        let cell2 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex , section: 0))
-        let cell3 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex  + 1, section: 0))
         
-        UIView.animate(withDuration: 0.1) {
+        let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex - 1 < 0 ? totalItemCount :  self.autoScrollIndex - 1 , section: 0))
+        let cell2 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex , section: 0))
+        let cell3 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex + 1 > totalItemCount ? totalItemCount/2 : 0, section: 0))
+        
+        UIView.animate(withDuration: 0.2) {
             cell1?.transform = CGAffineTransform(scaleX: 1, y: 1)
             cell2?.transform = CGAffineTransform(scaleX: 1, y: 1)
             cell3?.transform = CGAffineTransform(scaleX: 1, y: 1)
@@ -355,18 +358,17 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         self.autoScrollIndex = self.currentIndex()
         
-        let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex - 1 , section: 0))
+        let cell1 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex - 1 < 0 ? totalItemCount :  self.autoScrollIndex - 1, section: 0))
         
         let cell2 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex , section: 0))
-        let cell3 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex  + 1, section: 0))
+        let cell3 = banner.cellForItem(at: IndexPath.init(row: self.autoScrollIndex + 1 > totalItemCount ? totalItemCount/2 : 0, section: 0))
         
-        UIView.animate(withDuration: 0.1) {
+        UIView.animate(withDuration: 0.2) {
             cell1?.transform = CGAffineTransform(scaleX: 1, y: 1)
             cell2?.transform = CGAffineTransform(scaleX: 1, y: 1)
             cell3?.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
     }
-    
     
     
     
@@ -380,3 +382,4 @@ extension MDShockBannerView:UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
 }
+
