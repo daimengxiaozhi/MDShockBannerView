@@ -17,7 +17,7 @@ let mainH = UIScreen.main.bounds.height
 
 var navH:CGFloat{
     get{
-        if mainHeight == 812{
+        if mainH == 812{
             return 88
         }else{
             return 64
