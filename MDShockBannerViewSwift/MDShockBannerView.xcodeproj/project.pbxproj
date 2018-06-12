@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7E38264551ABE3CAE86A57D9 /* Pods_MDShockBannerView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F7B67F158DB497637CDB998 /* Pods_MDShockBannerView.framework */; };
+		E749DA2620CE729F00DBAA3D /* SMPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = E749DA2420CE729F00DBAA3D /* SMPageControl.m */; };
 		E7CDCB1A2086DC6800146353 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CDCB192086DC6800146353 /* AppDelegate.swift */; };
 		E7CDCB212086DC6800146353 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7CDCB202086DC6800146353 /* Assets.xcassets */; };
 		E7CDCB242086DC6800146353 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7CDCB222086DC6800146353 /* LaunchScreen.storyboard */; };
@@ -44,6 +45,9 @@
 		279705D4B52CFC6A0C03387C /* Pods-MDShockBannerView.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDShockBannerView.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MDShockBannerView/Pods-MDShockBannerView.debug.xcconfig"; sourceTree = "<group>"; };
 		9C7C4064CE09F3ADC313FBCF /* Pods-MDShockBannerView.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDShockBannerView.release.xcconfig"; path = "Pods/Target Support Files/Pods-MDShockBannerView/Pods-MDShockBannerView.release.xcconfig"; sourceTree = "<group>"; };
 		9F7B67F158DB497637CDB998 /* Pods_MDShockBannerView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MDShockBannerView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E749DA2320CE729E00DBAA3D /* MDShockBannerView-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MDShockBannerView-Bridging-Header.h"; sourceTree = "<group>"; };
+		E749DA2420CE729F00DBAA3D /* SMPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPageControl.m; sourceTree = "<group>"; };
+		E749DA2520CE729F00DBAA3D /* SMPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPageControl.h; sourceTree = "<group>"; };
 		E7CDCB162086DC6800146353 /* MDShockBannerView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MDShockBannerView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7CDCB192086DC6800146353 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7CDCB202086DC6800146353 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -108,6 +112,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E749DA1F20CE725700DBAA3D /* SMPageControl */ = {
+			isa = PBXGroup;
+			children = (
+				E749DA2520CE729F00DBAA3D /* SMPageControl.h */,
+				E749DA2420CE729F00DBAA3D /* SMPageControl.m */,
+				E749DA2320CE729E00DBAA3D /* MDShockBannerView-Bridging-Header.h */,
+			);
+			name = SMPageControl;
+			path = "../../../../APP合集/今日招采/mengdie-zhaocai-ios/zhaocai/Tools/SMPageControl";
+			sourceTree = "<group>";
+		};
 		E7CB5AD3208DAC2B00064E22 /* MDShockBanner */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,6 +161,7 @@
 		E7CDCB182086DC6800146353 /* MDShockBannerView */ = {
 			isa = PBXGroup;
 			children = (
+				E749DA1F20CE725700DBAA3D /* SMPageControl */,
 				E7CB5AD3208DAC2B00064E22 /* MDShockBanner */,
 				E7CDCB192086DC6800146353 /* AppDelegate.swift */,
 				E7CDCB4B2086DC9B00146353 /* ViewController.swift */,
@@ -246,6 +262,7 @@
 				TargetAttributes = {
 					E7CDCB152086DC6800146353 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 					};
 					E7CDCB292086DC6800146353 = {
@@ -367,6 +384,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E749DA2620CE729F00DBAA3D /* SMPageControl.m in Sources */,
 				E7CDCB542086DC9C00146353 /* MDBannerCollectionViewCell.swift in Sources */,
 				E7CDCB562086DC9C00146353 /* MDShockBannerView.swift in Sources */,
 				E7CDCB522086DC9C00146353 /* ViewController.swift in Sources */,
@@ -532,12 +550,15 @@
 			baseConfigurationReference = 279705D4B52CFC6A0C03387C /* Pods-MDShockBannerView.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZS6H235QJT;
 				INFOPLIST_FILE = MDShockBannerView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Alan.MDShockBannerView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../../APP合集/今日招采/mengdie-zhaocai-ios/zhaocai/Tools/SMPageControl/MDShockBannerView-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -548,12 +569,14 @@
 			baseConfigurationReference = 9C7C4064CE09F3ADC313FBCF /* Pods-MDShockBannerView.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZS6H235QJT;
 				INFOPLIST_FILE = MDShockBannerView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Alan.MDShockBannerView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../../APP合集/今日招采/mengdie-zhaocai-ios/zhaocai/Tools/SMPageControl/MDShockBannerView-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

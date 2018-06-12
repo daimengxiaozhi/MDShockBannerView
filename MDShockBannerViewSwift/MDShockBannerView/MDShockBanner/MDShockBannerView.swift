@@ -79,10 +79,10 @@ class MDShockBannerView: UIView {
         return banner
     }()
     
-    private lazy var pageControl:UIPageControl = {
-        let pageControl = UIPageControl()
-        pageControl.center = CGPoint(x: self.center.x, y: self.y + self.height - 20)
-        pageControl.sizeToFit()
+    private lazy var pageControl:SMPageControl = {
+        let pageControl = SMPageControl()
+        pageControl.isUserInteractionEnabled = false
+        pageControl.frame = CGRect(x: mainW/2-60, y: self.y + self.height - 25, width: 120, height: 6)
         self.addSubview(pageControl)
         return pageControl
     }()
@@ -122,6 +122,29 @@ class MDShockBannerView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    // 在viewWillAppear时图片卡在中间位置，你可以调用此方法调整图片位置
+    func adjustWhenControllerViewWillAppera(){
+        let targetIndex = self.currentIndex()
+        
+        if targetIndex < totalItemCount{
+            print(targetIndex)
+            print(totalItemCount)
+            self.banner.scrollToItem(at: IndexPath.init(item: targetIndex, section: 0), at: [], animated: false)
+            let itemIndex = self.pageControlIndexWithCurrentCellIndex(index: targetIndex)
+            print(itemIndex)
+            let topIndex = itemIndex + 1 > self.banners.count - 1 ? 0 : itemIndex + 1
+            let bottomIndex = itemIndex
+            self.topImage.sd_setImage(with: URL.init(string: banners[topIndex].bgImg!), completed: nil)
+            self.bottomImage.sd_setImage(with: URL.init(string: banners[bottomIndex].bgImg!), completed: nil)
+            UIView.animate(withDuration: 0.5, animations: {
+                self.leftView.setRadius(radius: 0, direction: .right)
+                self.rightView.setRadius(radius: 0, direction: .left)
+            })
+        }
+    }
+    
     
     
     func setUI(){
@@ -168,24 +191,11 @@ class MDShockBannerView: UIView {
     
     // 设置PageControll
     func setPageControlImage(){
-//         初始化一个属性列表数组
-        var ivarName_pageControl: [String] = []
-        var count: uint = 0
-        // 获取属性列表
-        let list = class_copyIvarList(UIPageControl.classForCoder(), &count)
-
-        for index in 0 ... count-1 {
-            // 获取属性名称，ivar_getTypeEncoding 可获取属性类型
-            let ivarName = ivar_getName( list![ Int(index) ] )
-            let name = String.init(cString: ivarName!)
-            print(name)
-            ivarName_pageControl.append(name)
+        if selectImage != nil{
+            self.pageControl.currentPageIndicatorImage = selectImage
         }
-        // 判断是否包含这两个属性
-        if ivarName_pageControl.contains("_pageImage") && ivarName_pageControl.contains("_currentPageImage")
-        {
-            pageControl.setValue(selectImage, forKey: "_pageImage")
-            pageControl.setValue(unselectImage, forKey: "_currentPageImage")
+        if unselectImage != nil{
+            self.pageControl.pageIndicatorImage = unselectImage
         }
     }
     
